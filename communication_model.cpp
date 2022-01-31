@@ -2,19 +2,30 @@
 #include <iostream>
 #include <tuple>
 
+template<typename T>
+using SetFunc = void(*)(T);
+
+template<typename req_t, typename resp_t, SetFunc<req_t> setStrategy, typename rollback_t = req_t>
+struct SetMesgs{
+    using Req_t = req_t;
+    using Resp_t = resp_t;
+    using Rollback_t = rollback_t;
+    constexpr static SetFunc<req_t> setFunc = setStrategy;
+};
+
 struct SetAReq{};
 struct SetAResp{};
-struct SetAMesgs{
-    using Req_t = SetAReq;
-    using Resp_t = SetAResp;
-};
+void setAStrategy(SetAReq){
+    std::cout << "strategu a" << std::endl;
+}
+using SetAMesgs = SetMesgs<SetAReq, SetAResp, setAStrategy>;
 
 struct SetBReq{};
 struct SetBResp{};
-struct SetBMesgs{
-    using Req_t = SetBReq;
-    using Resp_t = SetBResp;
-};
+void setBStrategy(SetBReq){
+    std::cout << "strategy b" << std::endl;
+}
+using SetBMesgs = SetMesgs<SetBReq, SetBResp, setBStrategy>;
 
 template<typename... Ts>
 struct CommModel{
@@ -35,14 +46,6 @@ struct CommModel{
     }
     std::tuple<typename Ts::Req_t...> types;
 };
-
-void setAStrategy(SetAReq){
-    std::cout << "strategu a" << std::endl;
-}
-
-void setBStrategy(SetBReq){
-    std::cout << "strategy b" << std::endl;
-}
 
 int main(){
     CommModel<SetAMesgs, SetBMesgs> comm;
