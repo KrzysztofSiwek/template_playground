@@ -30,9 +30,9 @@ using SetBMesgs = SetMesgs<SetBReq, SetBResp, setBStrategy>;
 template<typename... Ts>
 struct CommModel{
     template<typename MsgT>
-    void handleReqSendResp(typename MsgT::Req_t msg, std::function<void(typename MsgT::Req_t)> strategy){
+    void handleReqSendResp(typename MsgT::Req_t msg){
         prepareReq(msg);
-        strategy(msg);
+        MsgT::setFunc(msg);
         std::get<typename MsgT::Req_t>(types) = msg;
         sendResp<typename MsgT::Resp_t>();
     }
@@ -50,7 +50,7 @@ struct CommModel{
 int main(){
     CommModel<SetAMesgs, SetBMesgs> comm;
     SetAReq a;
-    comm.handleReqSendResp<SetAMesgs>(a, &setAStrategy);
+    comm.handleReqSendResp<SetAMesgs>(a);
     SetBReq b;
-    comm.handleReqSendResp<SetBMesgs>(b, &setBStrategy);
+    comm.handleReqSendResp<SetBMesgs>(b);
 }
