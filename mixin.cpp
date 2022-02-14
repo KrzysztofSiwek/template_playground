@@ -32,5 +32,5 @@ struct CrtpPointMixin: public Mixins<CrtpPointMixin<>>...{
 };
 
 int main(){
-    Polygon<MyPoint> a;
+    Polygon<Label, Colour> a;
 }
